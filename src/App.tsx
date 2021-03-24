@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {createContext} from 'react';
+import { BrowserRouter as Router, Switch, Route, Redirect, useHistory, useLocation} from "react-router-dom";
+import {AuthicationPage} from './Pages/PageAuth'
+import {RegisterPage} from './Pages/PageRegister'
+import {ProfileUserPage} from './Pages/PageProfileUser'
+import { useAppSelector } from './redux/hooks';
 
 function App() {
+  const activeUser = useAppSelector((state:any) => state.user.user)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+        <Switch>
+        <Route path="/reg" render={({ location }) => 
+          activeUser.active ? (<Redirect to={{ pathname: "/profile", state: { from: location }}}/>) : (<RegisterPage />)} />
+          <Route path='/profile'render={({ location }) =>
+            activeUser.active ? (<ProfileUserPage/>) : (<Redirect to={{ pathname: "/", state: { from: location }}}/>)}
+          />
+          <Route path="/" render={({ location }) => 
+          activeUser.active ? (<Redirect to={{ pathname: "/profile", state: { from: location }}}/>) : (<AuthicationPage/>)} />
+        </Switch>
+    </Router>
   );
 }
 
